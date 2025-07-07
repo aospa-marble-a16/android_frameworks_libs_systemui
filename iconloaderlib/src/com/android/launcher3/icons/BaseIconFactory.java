@@ -223,7 +223,8 @@ public class BaseIconFactory implements AutoCloseable {
         if (adaptiveIcon instanceof BitmapInfo.Extender extender) {
             info = extender.getExtendedInfo(bitmap, color, this, scale[0]);
         } else if (IconProvider.ATLEAST_T && mMonoIconEnabled) {
-            Drawable mono = getMonochromeDrawable(adaptiveIcon);
+            Drawable mono = getMonochromeDrawable(adaptiveIcon,
+                    options != null ? options.mIsDynamicShortcut : false);
             if (mono != null) {
                 info.setMonoIcon(createIconBitmap(mono, scale[0], MODE_ALPHA), this);
             }
@@ -238,7 +239,7 @@ public class BaseIconFactory implements AutoCloseable {
      * @param base the original icon
      */
     @TargetApi(Build.VERSION_CODES.TIRAMISU)
-    protected Drawable getMonochromeDrawable(AdaptiveIconDrawable base) {
+    protected Drawable getMonochromeDrawable(AdaptiveIconDrawable base, boolean isDynamicShortcut) {
         Drawable mono = base.getMonochrome();
         if (mono != null) {
             return new ClippedMonoDrawable(mono);
@@ -496,6 +497,7 @@ public class BaseIconFactory implements AutoCloseable {
     public static class IconOptions {
 
         boolean mIsInstantApp;
+        boolean mIsDynamicShortcut;
 
         @BitmapGenerationMode
         int mGenerationMode = MODE_WITH_SHADOW;
@@ -534,6 +536,15 @@ public class BaseIconFactory implements AutoCloseable {
         @NonNull
         public IconOptions setInstantApp(final boolean instantApp) {
             mIsInstantApp = instantApp;
+            return this;
+        }
+
+        /**
+         * If this icon represents a dynamic shortcut
+         */
+        @NonNull
+        public IconOptions setDynamicShortcut(final boolean isDynamicShortcut) {
+            mIsDynamicShortcut = isDynamicShortcut;
             return this;
         }
 
